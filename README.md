@@ -1,3 +1,6 @@
 # NeuralNetWork
 NeuralNetwork implemented by python
-verion0 
+
+I'm going to create my code for implemented a NeuralNetwork
+let's begin
+
