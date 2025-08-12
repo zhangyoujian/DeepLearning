@@ -1,105 +1,63 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+# 二元logistic回归实现
 
+class Logistic:
+    def __init__(self, X:np.array, Y:np.array, lr=0.01):
+        """
+        初始化Logistic对象
+        :param X: 矩阵维度为(n, m), 其中n为数据维度，m为样本数量
+        :param Y: 矩阵维度为(1, m), 其中m为样本数量
+        :return:
+        """
+        self.X = X
+        self.Y = Y.reshape(1, -1)  # 强制转为(1, m)
 
+        # w为权重
+        self.w = np.random.rand(X.shape[0], 1) * 0.01
+        # b为偏置
+        self.b = np.zeros((0, 0))
+        # lr为学习速率
+        self.lr = lr
 
-class logistic():
-    def __init__(self):
-        self.L2 = 0
-        self.Z = 0
-        self.A = 0
+    def __call__(self, x:np.array)->np.array:
+        output = self.forward(x)
+        return output
 
     @staticmethod
-    def sigmoid(Z):
-        return 1 / (1 + np.exp(-Z))
+    def sigmod(z:np.array)->np.array:
+        yhat = 1.0 / (1.0 + np.exp(-z))
+        return np.clip(yhat, 1e-8, 1-1e-8)  # 限制在[1e-8, 1-1e-8]
 
-    def intialParameter(self, hidelayer):
-        self.W = np.random.rand(hidelayer, 1)
-        self.b = np.random.rand()
+    def forward(self, x:np.array)->np.array:
+        z = np.dot(self.w.transpose(), x) + self.b
+        yhat = self.sigmod(z)
+        return yhat
 
+    def backpropagation(self, yhat:np.array):
+        m = self.Y.shape[1]
+        error = yhat - self.Y         # 维度(1, m)
 
-    def feedforward(self, X):
+        dw = np.dot(self.X, error.T)  # 维度(n, 1)
+        db = np.sum(error)            # 标量
 
-        self.X = X
-        self.Z = np.dot(self.X, self.W) + self.b
-        self.A = self.sigmoid(self.Z)
-        self.A = self.A[:,0]
-        return self.A
+        self.w -= self.lr * 1.0 / m * dw
+        self.b -= self.lr * 1.0 / m * db
 
-    def costFun(self,ylabel):
-
-        yhat = self.A
-        M = ylabel.shape[0]
-        cost = ylabel * np.log(yhat) + (1 - ylabel) * np.log(1-yhat)
-        cost = -1 / M * np.sum(cost) + self.L2 / (2 * M) * np.sum(np.power(self.W, 2))
+    def LossFunc(self, yhat)->float:
+        m = self.Y.shape[1]
+        # 内部二次裁剪确保稳定
+        yhat = np.clip(yhat, 1e-8, 1 - 1e-8)
+        cost = -1.0 / m * (np.sum(self.Y * np.log(yhat) + (1 - self.Y) * np.log(1 - yhat)))  # 返回标量
         return cost
 
-    def backforward(self, ylabel):
-
-        M = ylabel.shape[0]
-
-        delta = (self.A - ylabel)/M
-        delta = delta.reshape((-1,1))
-        delta_w = np.dot(self.X.transpose(), delta) + self.L2 / M * self.W
-        delta_b = np.sum(delta)
-
-        self.delta_w = delta_w
-        self.delta_b = delta_b
-
-
-    def updateWeights(self, learning_rate):
-        self.W = self.W - learning_rate * self.delta_w
-        self.b = self.b - learning_rate * self.delta_b
-
-    def predict(self, X):
-
-        pred = self.feedforward(X)
-        P = np.zeros(pred.shape[0], dtype=np.int)
-        P[pred>=self.threshhold] = 1
-        return P
-
-
-    def fit(self, X, Y, learning_rate = 0.1, L2 = 0.001, epoch = 5000, threshhold = 0.5):
-
-        self.threshhold = threshhold
-        self.L2 = L2
-        M = X.shape[0]
-        N = X.shape[1]
-
-        self.intialParameter(N)
-        Loss = []
-        for i in range(epoch):
-            self.feedforward(X)
-            loss = self.costFun(Y)
-            Loss.append(loss)
-            self.backforward(Y)
-            self.updateWeights(learning_rate)
-
-            print('iterative[%d] loss is %3.4f'%(i+1, loss))
-
-
-        plt.figure(0)
-        plt.plot(range(1,epoch+1), Loss,c='r', lw=2)
-        plt.xlabel('iterative')
-        plt.ylabel('Loss')
-        plt.show()
-
-        Pred = self.predict(X)
-        ylabel = np.round(Y)
-
-        Accuracy = np.mean(Pred==ylabel)*100
-        print("Accuracy is %3.2f"%(Accuracy))
-        print(self.b)
-        print(self.W)
+def main():
+    epoch = 100000
+    model = Logistic(None, None)
+    for i in range(epoch):
 
 
 
-
-
-
-
-
-
-
-
+if __name__=='__main__':
+    main()

@@ -1,4 +1,5 @@
-# NeuralNetWork
-NeuralNetwork implemented by python
+# 记录从0开始深度学习的全过程
+
+仓库会记录个人对一些机器学习、深度学习算法的理解和编码实现过程
 
 
