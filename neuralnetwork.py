@@ -105,7 +105,7 @@ def main():
     X, Y = iris.data[mask], iris.target[mask].reshape(1, -1)
     X = X.T
     model = NeuralNetwork(X, Y, 0.001)
-    total_epoch = 500000
+    total_epoch = 100000
     loss_curve = []
     for epoch in range(total_epoch):
         predict_tuple = model(X)
